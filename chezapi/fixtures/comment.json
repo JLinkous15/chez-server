@@ -1,0 +1,13 @@
+[
+    {
+        "model": "chezapi.comment",
+        "pk": 1,
+        "fields": {
+            "chef": 1,
+            "chez": 3,
+            "body": "Gotta try this!",
+            "date": "2020-08-29T13:24:27Z",
+            "image": null
+        }
+    }
+]

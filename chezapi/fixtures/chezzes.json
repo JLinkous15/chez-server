@@ -1,0 +1,38 @@
+[
+    {
+        "model": "chezapi.chez",
+        "pk": 1,
+        "fields": {
+            "chef": 1,
+            "name": "Classic",
+            "recipe": "Bread, cheese, butter. KISS.",
+            "image": null,
+            "is_published": true,
+            "date": "2020-08-29T13:24:27Z"
+        }
+    },
+    {
+        "model": "chezapi.chez",
+        "pk": 2,
+        "fields": {
+            "chef": 1,
+            "name": "a la carte",
+            "recipe": "A plate of cold ingredients.",
+            "image": null,
+            "is_published": false,
+            "date": "2020-08-29T13:24:27Z"
+        }
+    },
+    {
+        "model": "chezapi.chez",
+        "pk": 3,
+        "fields": {
+            "chef": 1,
+            "name": "Pear and Brie",
+            "recipe": "The meltiest baby.",
+            "image": null,
+            "is_published": true,
+            "date": "2020-08-29T13:24:27Z"
+        }
+    }
+]

@@ -1,0 +1,12 @@
+[
+    {
+        "model": "chezapi.chef",
+        "pk": 1,
+        "fields": {
+            "user": 1,
+            "created": "2020-08-29T13:24:27Z",
+            "profile_image": null,
+            "bio": "I'm the grillediest, cheesiest, beastiest."
+        }
+    }
+]
