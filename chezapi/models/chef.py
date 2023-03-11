@@ -7,9 +7,8 @@ class Chef(models.Model):
     profile_image = models.ImageField()
     bio = models.CharField(max_length=500)
     created = models.DateTimeField(auto_now_add=True)
-    subscribers = models.ManyToManyField(
+    subscriptions = models.ManyToManyField(
         "Chef", through="Subscribe")
-    subscriptions = models.ManyToManyField("Chef", through="Subscribe")
 
     @property
     def username(self):
