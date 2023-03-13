@@ -60,6 +60,11 @@ def register_user(request):
         bio=request.data['bio'],
         user=new_user
     )
+    try:
+        chef.profile_image = request.data['profile_image']
+        chef.save()
+    except Exception:
+        pass
 
     # Use the REST Framework's token generator on the new user account
     token = Token.objects.create(user=chef.user)

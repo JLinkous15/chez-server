@@ -16,11 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from chezapi.views import ChefView, ChezView, register_user, login_user
+from chezapi.views import CheeseView, ChefView, ChezView, register_user, login_user
 
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'chezzes', ChezView, 'chez')
 router.register(r'chefs', ChefView, 'chef')
+router.register(r'cheeses', CheeseView, 'cheese')
 
 urlpatterns = [
     path('register', register_user),
