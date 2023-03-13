@@ -3,6 +3,7 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
 from chezapi.models import Chef
+from django.contrib.auth.models import User
 
 
 class ChefView(ViewSet):
@@ -34,6 +35,29 @@ class ChefView(ViewSet):
             return Response(serialized.data, status=status.HTTP_200_OK)
         except Chef.DoesNotExist as ex:
             return Response({"message": ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
+
+    def update(self, request, pk):
+        """
+        PUT request to /chefs/pk for users to update their profile
+        """
+        chef = Chef.objects.get(user=request.auth.user)
+        user = User.objects.get(user=request.auth.user)
+        user.first_name = request.data['first_name']
+        user.last_name = request.data['last_name']
+        chef.bio = request.data['bio']
+        try:
+            chef.profile_image = request.data['profile_image']
+        except Exception:
+            pass
+        chef.save()
+        user.save()
+        serialized = ChefSerializer(chef, many=False)
+        return Response(serialized.data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, pk):
+        chef = Chef.objects.get(user=request.auth.user)
+        chef.delete()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 
 class ChefSerializer(serializers.ModelSerializer):
