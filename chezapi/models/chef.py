@@ -11,6 +11,10 @@ class Chef(models.Model):
         "Chef", through="Subscribe")
 
     @property
+    def is_staff(self):
+        return self.user.is_staff
+
+    @property
     def username(self):
         return self.user.username
 

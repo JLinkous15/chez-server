@@ -63,4 +63,4 @@ class ChefView(ViewSet):
 class ChefSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chef
-        fields = ('id', 'full_name', 'username', 'is_chef')
+        fields = ('id', 'full_name', 'username', 'is_chef', 'is_staff')
