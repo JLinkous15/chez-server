@@ -3,6 +3,7 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
 from chezapi.models import Chef
+from rest_framework.decorators import action
 from django.contrib.auth.models import User
 
 
@@ -58,6 +59,12 @@ class ChefView(ViewSet):
         chef = Chef.objects.get(user=request.auth.user)
         chef.delete()
         return Response(None, status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=['get'], detail=False)
+    def getMe(self, request):
+        user = Chef.objects.get(user=request.auth.user)
+        serialized = ChefSerializer(user, many=False)
+        return Response(serialized.data, status=status.HTTP_200_OK)
 
 
 class ChefSerializer(serializers.ModelSerializer):
