@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from chezapi.views import CheeseView, ChefView, ChezView, register_user, login_user
+from chezapi.views import SubscribeView, CheeseView, ChefView, ChezView, register_user, login_user
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -24,6 +24,7 @@ router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'chezzes', ChezView, 'chez')
 router.register(r'chefs', ChefView, 'chef')
 router.register(r'cheeses', CheeseView, 'cheese')
+router.register(r'subscriptions', SubscribeView, 'subscription')
 
 urlpatterns = [
     path('register', register_user),

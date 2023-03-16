@@ -5,7 +5,9 @@ from rest_framework import serializers, status
 import uuid
 import base64
 from django.core.files.base import ContentFile
-from chezapi.models import Chez, Chef, Comment, Cheese
+from rest_framework.decorators import action
+
+from chezapi.models import Chez, Chef, Comment, Cheese, Subscribe
 
 
 class ChezView(ViewSet):
@@ -80,8 +82,8 @@ class ChezView(ViewSet):
             format, imgstr = request.data["image"].split(';base64,')
             ext = format.split('/')[-1]
             data = ContentFile(base64.b64decode(
-                imgstr), name=f'{request.data["image"]}-{uuid.uuid4()}.{ext}')
-            chez.image = None
+                imgstr), name=f'test-{uuid.uuid4()}.{ext}')
+            chez.image = data
             chez.save()
             for cheese in request.data["cheeses"]:
                 chez.cheeses.add(Cheese.objects.get(pk=cheese['id']))
@@ -90,6 +92,36 @@ class ChezView(ViewSet):
             return Response(serialized.data, status=status.HTTP_201_CREATED)
         except Exception as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(methods=['post'], detail=True)
+    def postcomment(self, request, pk):
+
+        chez = Chez.objects.get(pk=pk)
+        chef = Chef.objects.get(user=request.auth.user)
+        comment = Comment()
+        comment.chef = chef
+        comment.chez = chez
+        comment.body = request.data['body']
+        try:
+            comment.image = None
+        except Exception as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
+        comment.save()
+        return Response({'message': "comment added"}, status=status.HTTP_201_CREATED)
+
+    @action(methods=['DELETE'], detail=True)
+    def deletecomment(self, request, pk):
+        comment = Comment.objects.get(pk=pk)
+        comment.delete()
+        return Response({'message': 'comment deleted'}, status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=['get'], detail=False)
+    def subscribedChezzes(self, request):
+        user = Chef.objects.get(user=request.auth.user)
+        chezzes = Chez.objects.filter(chef__in=user.subscriptions.all())
+        serialized = ChezSerializer(
+            chezzes, many=True, context={'request': request})
+        return Response(serialized.data, status=status.HTTP_200_OK)
 
 
 class ChezCheeseSerializer(serializers.ModelSerializer):
@@ -103,13 +135,15 @@ class ChezChefSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Chef
-        fields = ('id', 'username', 'is_staff', 'is_chef')
+        fields = ('id', 'username', 'is_staff', 'is_chef', 'subscriptions')
 
     def get_is_chef(self, chef):
         return chef.user == self.context["request"].auth.user
 
 
 class ChezCommentSerializer(serializers.ModelSerializer):
+    chef = ChezChefSerializer(many=False)
+
     class Meta:
         model = Comment
         fields = ('id', 'chef', 'body', 'date')
