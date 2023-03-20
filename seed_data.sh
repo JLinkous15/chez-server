@@ -1,4 +1,4 @@
-rm -rf bangazonapi/migrations
+rm -rf chezapi/migrations
 rm db.sqlite3
 python manage.py makemigrations chezapi
 python manage.py migrate
