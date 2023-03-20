@@ -7,7 +7,7 @@ import base64
 from django.core.files.base import ContentFile
 from rest_framework.decorators import action
 
-from chezapi.models import Chez, Chef, Comment, Cheese, Subscribe
+from chezapi.models import Chez, Chef, Comment, Cheese
 
 
 class ChezView(ViewSet):
@@ -53,19 +53,26 @@ class ChezView(ViewSet):
         PUT requests to /chezzes/pk
         Returns the updated instance of Chez and a 200 status code
         """
+
+        chez = Chez.objects.get(pk=pk)
+        chez.name = request.data['name']
+        chez.recipe = request.data['recipe']
+        chez.image = request.data['image']
+        chez.save()
+        for cheese in request.data["cheeses"]:
+            chez.cheeses.add(Cheese.objects.get(pk=cheese['id']))
         try:
-            chez = Chez.objects.get(pk=pk)
-            chez.name = request.data['name']
-            chez.recipe = request.data['recipe']
-            chez.image = request.data['image']
+            format, imgstr = request.data["image"].split(';base64,')
+            ext = format.split('/')[-1]
+            data = ContentFile(base64.b64decode(
+                imgstr), name=f'chez-{uuid.uuid4()}.{ext}')
+            chez.image = data
             chez.save()
-            for cheese in request.data["cheeses"]:
-                chez.cheeses.add(Cheese.objects.get(pk=cheese['id']))
             serialized = ChezSerializer(
                 chez, many=False, context={'request': request})
             return Response(serialized.data, status=status.HTTP_200_OK)
-        except Chez.DoesNotExist as ex:
-            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def create(self, request):
         """
@@ -82,7 +89,7 @@ class ChezView(ViewSet):
             format, imgstr = request.data["image"].split(';base64,')
             ext = format.split('/')[-1]
             data = ContentFile(base64.b64decode(
-                imgstr), name=f'test-{uuid.uuid4()}.{ext}')
+                imgstr), name=f'chez-{uuid.uuid4()}.{ext}')
             chez.image = data
             chez.save()
             for cheese in request.data["cheeses"]:
@@ -119,6 +126,14 @@ class ChezView(ViewSet):
     def subscribedChezzes(self, request):
         user = Chef.objects.get(user=request.auth.user)
         chezzes = Chez.objects.filter(chef__in=user.subscriptions.all())
+        serialized = ChezSerializer(
+            chezzes, many=True, context={'request': request})
+        return Response(serialized.data, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=False)
+    def myChezzes(self, request):
+        chef = Chef.objects.get(user=request.auth.user)
+        chezzes = Chez.objects.filter(chef=chef)
         serialized = ChezSerializer(
             chezzes, many=True, context={'request': request})
         return Response(serialized.data, status=status.HTTP_200_OK)

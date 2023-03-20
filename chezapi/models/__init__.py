@@ -5,3 +5,4 @@ from .chez import Chez
 from .comment import Comment
 from .like import Like
 from .subscribe import Subscribe
+from .article import Article
