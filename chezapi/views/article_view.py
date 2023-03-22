@@ -47,6 +47,18 @@ class ArticleView(ViewSet):
         except Article.DoesNotExist as ex:
             return Response({"message": ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
 
+    def destroy(self, request, pk):
+        article = Article.objects.get(pk=pk)
+        article.delete()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
+
+    def update(self, request, pk):
+        article = Article.objects.get(pk=pk)
+        article.title = request.data['title']
+        article.body = request.data['body']
+        article.save()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
+
 
 class ArticleChefSerializer(serializers.ModelSerializer):
     class Meta:

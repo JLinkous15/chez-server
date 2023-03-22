@@ -19,6 +19,7 @@ class ChezView(ViewSet):
         Returns a list of all Chez instances and a 200 status code
         """
         chezzes = Chez.objects.all()
+        chezzes = chezzes.filter(is_published=True)
         serialized = ChezSerializer(
             chezzes, many=True, context={'request': request})
         return Response(serialized.data, status=status.HTTP_200_OK)
@@ -126,7 +127,8 @@ class ChezView(ViewSet):
     @action(methods=['get'], detail=False)
     def subscribedChezzes(self, request):
         user = Chef.objects.get(user=request.auth.user)
-        chezzes = Chez.objects.filter(chef__in=user.subscriptions.all())
+        chezzes = Chez.objects.filter(
+            chef__in=user.subscriptions.all()).filter(is_published=True)
         serialized = ChezSerializer(
             chezzes, many=True, context={'request': request})
         return Response(serialized.data, status=status.HTTP_200_OK)
