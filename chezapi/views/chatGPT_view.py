@@ -18,7 +18,7 @@ class ChatView(ViewSet):
 
         user_input = request.data['user_input']
 
-        prompt = user_input
+        prompt = f'Add some cheese puns to your response to the following: {user_input}'
 
         response = openai.Completion.create(
             engine='text-davinci-003',

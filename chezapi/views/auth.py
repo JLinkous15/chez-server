@@ -4,7 +4,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-
+import uuid
+import base64
+from django.core.files.base import ContentFile
 from chezapi.models import Chef
 
 
@@ -56,15 +58,16 @@ def register_user(request):
     )
 
     # Now save the extra info in the levelupapi_gamer table
-    chef = Chef.objects.create(
-        bio=request.data['bio'],
-        user=new_user
-    )
-    try:
-        chef.profile_image = request.data['profile_image']
-        chef.save()
-    except Exception:
-        pass
+    chef = Chef()
+    chef.user = new_user
+    chef.bio = request.data['bio']
+    if request.data['profile_image'] != "":
+        format, imgstr = request.data["profile_image"].split(';base64,')
+        ext = format.split('/')[-1]
+        data = ContentFile(base64.b64decode(
+            imgstr), name=f'{chef.id}-{uuid.uuid4()}.{ext}')
+        chef.profile_image = data
+    chef.save()
 
     # Use the REST Framework's token generator on the new user account
     token = Token.objects.create(user=chef.user)

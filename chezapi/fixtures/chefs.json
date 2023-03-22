@@ -5,8 +5,8 @@
         "fields": {
             "user": 1,
             "created": "2020-08-29T13:24:27Z",
-            "profile_image": null,
-            "bio": "I'm the grillediest, cheesiest, beastiest."
+            "bio": "I'm the grillediest, cheesiest, beastiest.",
+            "profile_image": "images/default_user_image.jpg"
         }
     }
 ]

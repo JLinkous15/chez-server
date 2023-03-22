@@ -67,7 +67,16 @@ class ChefView(ViewSet):
         return Response(serialized.data, status=status.HTTP_200_OK)
 
 
-class ChefSerializer(serializers.ModelSerializer):
+class ChefSubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chef
-        fields = ('id', 'full_name', 'username', 'is_chef', 'is_staff')
+        fields = ('id', 'username', 'profile_image')
+
+
+class ChefSerializer(serializers.ModelSerializer):
+    subscriptions = ChefSubscriptionSerializer(many=True)
+
+    class Meta:
+        model = Chef
+        fields = ('id', 'full_name', 'profile_image',
+                  'username', 'is_chef', 'is_staff', 'subscriptions')

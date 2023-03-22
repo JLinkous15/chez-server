@@ -6,7 +6,7 @@
             "chef": 1,
             "name": "Classic",
             "recipe": "Bread, cheese, butter. KISS.",
-            "image": null,
+            "image": "images/default_chez_image.jpg",
             "is_published": true,
             "date": "2020-08-29T13:24:27Z"
         }
@@ -18,7 +18,7 @@
             "chef": 1,
             "name": "a la carte",
             "recipe": "A plate of cold ingredients.",
-            "image": null,
+            "image": "images/default_chez_image.jpg",
             "is_published": false,
             "date": "2020-08-29T13:24:27Z"
         }
@@ -30,7 +30,7 @@
             "chef": 1,
             "name": "Pear and Brie",
             "recipe": "The meltiest baby.",
-            "image": null,
+            "image": "images/default_chez_image.jpg",
             "is_published": true,
             "date": "2020-08-29T13:24:27Z"
         }
