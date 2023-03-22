@@ -57,22 +57,22 @@ class ChezView(ViewSet):
         chez = Chez.objects.get(pk=pk)
         chez.name = request.data['name']
         chez.recipe = request.data['recipe']
-        chez.image = request.data['image']
+        chez.is_published = request.data['is_published']
+
         chez.save()
         for cheese in request.data["cheeses"]:
             chez.cheeses.add(Cheese.objects.get(pk=cheese['id']))
-        try:
+        if request.data['image'] != "":
             format, imgstr = request.data["image"].split(';base64,')
             ext = format.split('/')[-1]
             data = ContentFile(base64.b64decode(
-                imgstr), name=f'chez-{uuid.uuid4()}.{ext}')
+                imgstr), name=f'{chez.id}-{uuid.uuid4()}.{ext}')
             chez.image = data
             chez.save()
-            serialized = ChezSerializer(
-                chez, many=False, context={'request': request})
-            return Response(serialized.data, status=status.HTTP_200_OK)
-        except Exception as ex:
-            return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        serialized = ChezSerializer(
+            chez, many=False, context={'request': request})
+        return Response(serialized.data, status=status.HTTP_200_OK)
 
     def create(self, request):
         """
@@ -84,21 +84,22 @@ class ChezView(ViewSet):
         chez.chef = chef
         chez.name = request.data['name']
         chez.recipe = request.data['recipe']
+        chez.is_published = request.data['is_published']
+        chez.save()
+        for cheese in request.data["cheeses"]:
+            chez.cheeses.add(Cheese.objects.get(pk=cheese['id']))
 
-        try:
+        if request.data['image'] != "":
             format, imgstr = request.data["image"].split(';base64,')
             ext = format.split('/')[-1]
             data = ContentFile(base64.b64decode(
-                imgstr), name=f'chez-{uuid.uuid4()}.{ext}')
+                imgstr), name=f'{chez.id}-{uuid.uuid4()}.{ext}')
             chez.image = data
             chez.save()
-            for cheese in request.data["cheeses"]:
-                chez.cheeses.add(Cheese.objects.get(pk=cheese['id']))
-            serialized = ChezSerializer(
-                chez, many=False, context={'request': request})
-            return Response(serialized.data, status=status.HTTP_201_CREATED)
-        except Exception as ex:
-            return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        serialized = ChezSerializer(
+            chez, many=False, context={'request': request})
+        return Response(serialized.data, status=status.HTTP_201_CREATED)
 
     @action(methods=['post'], detail=True)
     def postcomment(self, request, pk):
@@ -150,7 +151,8 @@ class ChezChefSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Chef
-        fields = ('id', 'username', 'is_staff', 'is_chef', 'subscriptions')
+        fields = ('id', 'username', 'is_staff', 'is_chef',
+                  'subscriptions', 'profile_image')
 
     def get_is_chef(self, chef):
         return chef.user == self.context["request"].auth.user
@@ -172,4 +174,4 @@ class ChezSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chez
         fields = ('id', 'chef', 'name', 'recipe',
-                  'image', 'chez_comments', 'cheeses')
+                  'image', 'chez_comments', 'cheeses', 'is_published', 'date')

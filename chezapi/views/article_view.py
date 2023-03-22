@@ -39,6 +39,14 @@ class ArticleView(ViewSet):
         except Exception as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    def retrieve(self, request, pk):
+        try:
+            article = Article.objects.get(pk=pk)
+            serialized = ArticleSerializer(article, many=False)
+            return Response(serialized.data, status=status.HTTP_200_OK)
+        except Article.DoesNotExist as ex:
+            return Response({"message": ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
+
 
 class ArticleChefSerializer(serializers.ModelSerializer):
     class Meta:
