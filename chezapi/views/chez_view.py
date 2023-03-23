@@ -69,11 +69,8 @@ class ChezView(ViewSet):
             data = ContentFile(base64.b64decode(
                 imgstr), name=f'{chez.id}-{uuid.uuid4()}.{ext}')
             chez.image = data
-            chez.save()
-
-        serialized = ChezSerializer(
-            chez, many=False, context={'request': request})
-        return Response(serialized.data, status=status.HTTP_200_OK)
+        chez.save()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
 
     def create(self, request):
         """
