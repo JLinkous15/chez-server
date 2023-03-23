@@ -26,18 +26,16 @@ class ArticleView(ViewSet):
         article.title = request.data['title']
         article.body = request.data['body']
 
-        try:
+        if request.data['image'] != "":
             format, imgstr = request.data["image"].split(';base64,')
             ext = format.split('/')[-1]
             data = ContentFile(base64.b64decode(
                 imgstr), name=f'article-{uuid.uuid4()}.{ext}')
             article.image = data
             article.save()
-            serialized = ArticleSerializer(
-                article, many=False)
-            return Response(serialized.data, status=status.HTTP_201_CREATED)
-        except Exception as ex:
-            return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        serialized = ArticleSerializer(
+            article, many=False)
+        return Response(serialized.data, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, pk):
         try:
