@@ -19,7 +19,7 @@ class ChezView(ViewSet):
         Returns a list of all Chez instances and a 200 status code
         """
         chezzes = Chez.objects.all()
-        chezzes = chezzes.filter(is_published=True)
+        chezzes = chezzes.filter(is_published=True).order_by("-date")
         serialized = ChezSerializer(
             chezzes, many=True, context={'request': request})
         return Response(serialized.data, status=status.HTTP_200_OK)

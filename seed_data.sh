@@ -8,3 +8,4 @@ python manage.py loaddata chefs
 python manage.py loaddata cheeses
 python manage.py loaddata chezzes
 python manage.py loaddata comments
+python manage.py loaddata articles
